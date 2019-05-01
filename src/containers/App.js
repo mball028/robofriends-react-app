@@ -4,6 +4,8 @@ import SearchBox from '../components/SearchBox';
 import Scroll from '../components/Scroll'
 import './app.css';
 
+
+// we can create and export our App Component at the same time
 export default class App extends Component {
 
     //setting our state
@@ -37,6 +39,8 @@ export default class App extends Component {
         const { robots, searchfield } = this.state;
         //filter out robot names with characters matching searchfield
         const filteredRobots = robots.filter(robot => {
+            // use toLowerCase to the char values are ===
+            // .includes() will see if the values from searchfield are in robot.filter(robot.name)
             return robot.name.toLowerCase().includes(searchfield.toLowerCase());
         })
         //using a ternary we can return Loading... or cardlist inside the scroll component
