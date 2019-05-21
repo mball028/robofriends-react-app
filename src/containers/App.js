@@ -6,48 +6,34 @@ import Scroll from '../components/Scroll'
 import ErrorBoundary from '../components/ErrorBoundary'
 import './app.css';
 
-import { setSearchField } from '../actions';
+import { setSearchField, requestRobots } from '../actions';
 
 const mapStateToProps = state => {
   return {
-    searchField: state.searchField
+    searchField: state.searchRobots.searchField, 
+    robots: state.requestRobots.robots,
+    isPending: state.requestRobots.isPending,
+    error: state.requestRobots.error
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    onSearchChange: event => dispatch(setSearchField(event.target.value))
+    onSearchChange: event => dispatch(setSearchField(event.target.value)),
+    onRequestRobots: () => dispatch(requestRobots())
   };
 };
 
 // we can create and export our App Component at the same time
 class App extends Component {
 
-    //setting our state
-    constructor(){
-        super()
-        //state is set as an object
-        this.state = {
-            robots: [],
-        }
-    }
-
     componentDidMount() {
-        //fetch is a tool for us to make requests
-        //we fetch our users dummy data
-        fetch('https://jsonplaceholder.typicode.com/users')
-        //translating the response we get from fetch
-        .then(response => response.json())
-        //recieving users from fake API
-        //setting our state of robots to value of users from API 
-        .then(users => this.setState({ robots: users }))
+       this.props.onRequestRobots();
     }
 
 
     render() {
-        //we set = this.state to refactor our code DRY
-        const { robots } = this.state;
-        const { searchField, onSearchChange } = this.props;
+        const { searchField, onSearchChange, robots, isPending } = this.props;
         //filter out robot names with characters matching searchfield
         const filteredRobots = robots.filter(robot => {
             // use toLowerCase to the char values are ===
@@ -55,7 +41,7 @@ class App extends Component {
             return robot.name.toLowerCase().includes(searchField.toLowerCase());
         })
         //using a ternary we can return Loading... or cardlist inside the scroll component
-        return !robots.length ? (
+        return isPending ? (
           // if we are waiting for a lot of data and it takes time to render
           <h2 className="light-red pa2 tc">Loading...</h2>
         ) : (
@@ -81,4 +67,5 @@ class App extends Component {
 
 
 // a higher order function returns that returns another function
+// connect comes from react-redux
 export default connect(mapStateToProps, mapDispatchToProps)(App);
